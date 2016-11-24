@@ -252,7 +252,7 @@ class ParticleFilter(InferenceModule):
         newBeliefs, oldBeliefs = util.Counter(), self.getBeliefDistribution()
         for location in self.legalPositions:
             trueDistance = util.manhattanDistance(location, pacmanPosition)
-            print emissionModel[trueDistance]
+            #print emissionModel[trueDistance]
             newBeliefs[location] = emissionModel[trueDistance] * oldBeliefs[location]
         if not any(newBeliefs.values()):
             self.initializeUniformly(gameState)
@@ -334,16 +334,21 @@ class JointParticleFilter:
   def initializeParticles(self):
     "Initializes particles randomly.  Each particle is a tuple of ghost positions. Use self.numParticles for the number of particles"
     "*** YOUR CODE HERE ***"
-    possibleStates = itertools.product(self.legalPositions, repeat=self.numGhosts)
+    #cartesian product
+    #possibleStates = itertools.product(self.legalPositions, repeat=self.numGhosts)
     # print possibleStates
     # raise "hello"
+    # self.particles = []
+    #
+    # while len(self.particles) < self.numParticles:
+    #     for state in possibleStates:
+    #         self.particles.append(state)
+    #         if len(self.particles):
+    #             break
     self.particles = []
-
-    while len(self.particles) < self.numParticles:
-        for state in possibleStates:
-            self.particles.append(state)
-            if len(self.particles):
-                break
+    for i in range(self.numParticles):
+        particle = [random.choice(self.legalPositions) for j in range(self.numGhosts)]
+        self.particles.append(tuple(particle))
 
   def addGhostAgent(self, agent):
     "Each ghost agent is registered separately and stored (in case they are different)."
@@ -438,7 +443,9 @@ class JointParticleFilter:
         # Tursns out it works now. Still not sure why.
         for i in range(self.numGhosts):
             if noisyDistances[i] == None:
+                particle = list(particle)
                 particle[i] = self.getJailPosition(i)
+                particle = tuple(particle)
             else:
                 distance = util.manhattanDistance(particle[i], pacmanPosition)
                 # print emissionModels[i][distance]
